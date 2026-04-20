@@ -1,17 +1,68 @@
-# flutter_application_1
+# UangKu — Personal Expense Tracker
 
-A new Flutter project.
+UangKu is a simple and fast mobile application built with Flutter to help users track their daily expenses effortlessly.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## Features
 
-A few resources to get you started if this is your first Flutter project:
+* Add daily expenses in seconds
+* View recent transactions
+* Automatic total expense calculation
+* Swipe to delete transactions
+* Offline-first (no internet required)
+* Local data persistence using Hive
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Purpose
+
+This project was built to demonstrate:
+
+* Flutter UI development (Material Design)
+* State management using setState
+* Local database implementation using Hive
+* Clean and simple UX for mobile users
+
+---
+
+## Tech Stack
+
+* Flutter (Dart)
+* Hive (Local Database)
+* Intl (Currency formatting)
+
+---
+
+## Screenshots
+
+
+
+---
+
+## Key Decisions
+
+* **Hive over SQLite**
+  Chosen for simplicity, fast setup, and lightweight local storage.
+
+* **Offline-first approach**
+  Users can track expenses anytime without internet.
+
+* **Minimal UI design**
+  Focus on speed and ease of use (<30 seconds per transaction).
+
+---
+
+## Future Improvements
+
+* 📊 Expense chart visualization
+* 📅 Daily / monthly filtering
+* 📤 Export to Excel / PDF
+* 🌙 Dark mode
+
+---
+
+## Author
+
+Wildan Rahadian
+GitHub: https://github.com/Wild-and-R
