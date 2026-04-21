@@ -66,3 +66,8 @@ This project was built to demonstrate:
 
 Wildan Rahadian
 GitHub: https://github.com/Wild-and-R
+
+---
+
+## Download APK
+https://github.com/Wild-and-R/UangKu/releases
