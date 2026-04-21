@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:intl/intl.dart';
 import '../models/transaction.dart';
 
 class AddTransactionModal extends StatefulWidget {
@@ -19,15 +18,10 @@ class _AddTransactionModalState extends State<AddTransactionModal> {
 
   final box = Hive.box<TransactionModel>('transactions');
 
-  double parseRupiah(String input) {
-    final cleaned = input.replaceAll(RegExp(r'[^0-9]'), '');
-    return double.tryParse(cleaned) ?? 0;
-  }
-
   void save() {
-    final amount = parseRupiah(amountController.text);
+    final amount = double.tryParse(amountController.text);
 
-    if (amount <= 0) return;
+    if (amount == null) return;
 
     box.add(TransactionModel(
       amount: amount,
@@ -41,68 +35,83 @@ class _AddTransactionModalState extends State<AddTransactionModal> {
 
   @override
   Widget build(BuildContext context) {
-    final formatter = NumberFormat("#,###", "id_ID");
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom + 20, 
+          left: 16,
+          right: 16,
+          top: 16,
+        ),
+        child: SingleChildScrollView( 
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Tambah Transaksi",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
 
-    return Padding(
-      padding: EdgeInsets.all(16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: amountController,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: "Nominal",
-              border: OutlineInputBorder(),
-            ),
-            onChanged: (value) {
-              final number = parseRupiah(value);
-              final formatted = formatter.format(number);
+              SizedBox(height: 15),
 
-              amountController.value = TextEditingValue(
-                text: formatted,
-                selection:
-                    TextSelection.collapsed(offset: formatted.length),
-              );
-            },
+              TextField(
+                controller: amountController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: "Nominal",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 15),
+
+              DropdownButtonFormField<String>(
+                value: category,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                items: [
+                  "Makan",
+                  "Transport",
+                  "Belanja",
+                  "Tagihan",
+                  "Lainnya"
+                ].map((e) {
+                  return DropdownMenuItem(
+                    value: e,
+                    child: Text(e),
+                  );
+                }).toList(),
+                onChanged: (val) {
+                  setState(() {
+                    category = val!;
+                  });
+                },
+              ),
+
+              SizedBox(height: 20),
+
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: save,
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 14),
+                    backgroundColor: Colors.deepPurple,
+                  ),
+                  child: Text("Simpan"),
+                ),
+              ),
+            ],
           ),
-
-          SizedBox(height: 12),
-
-          DropdownButtonFormField<String>(
-            value: category,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-            ),
-            items: [
-              "Makan",
-              "Transport",
-              "Belanja",
-              "Tagihan",
-              "Lainnya"
-            ].map((e) {
-              return DropdownMenuItem(
-                value: e,
-                child: Text(e),
-              );
-            }).toList(),
-            onChanged: (val) {
-              setState(() {
-                category = val!;
-              });
-            },
-          ),
-
-          SizedBox(height: 16),
-
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: save,
-              child: Text("Simpan"),
-            ),
-          )
-        ],
+        ),
       ),
     );
   }

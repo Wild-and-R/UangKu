@@ -10,14 +10,20 @@ void main() async {
   Hive.registerAdapter(TransactionModelAdapter());
   await Hive.openBox<TransactionModel>('transactions');
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      title: "UangKu",
+      theme: ThemeData(
+        primarySwatch: Colors.deepPurple,
+      ),
       home: HomeScreen(),
     );
   }

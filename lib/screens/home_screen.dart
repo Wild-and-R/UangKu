@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-import 'package:intl/intl.dart';
 import '../models/transaction.dart';
 import '../widgets/add_transaction_modal.dart';
 
@@ -12,12 +11,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final box = Hive.box<TransactionModel>('transactions');
 
-  final rupiahFormat = NumberFormat.currency(
-    locale: 'id_ID',
-    symbol: 'Rp ',
-    decimalDigits: 0,
-  );
-
   double getTotal() {
     return box.values.fold(0, (sum, item) => sum + item.amount);
   }
@@ -27,49 +20,26 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {});
   }
 
-  IconData getCategoryIcon(String category) {
-    switch (category) {
-      case "Makan":
-        return Icons.restaurant;
-      case "Transport":
-        return Icons.directions_car;
-      case "Belanja":
-        return Icons.shopping_bag;
-      case "Tagihan":
-        return Icons.receipt;
-      default:
-        return Icons.category;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final transactions = box.values.toList().reversed.toList();
 
     return Scaffold(
-      backgroundColor: Color(0xFFF5F6FA),
-
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
+        title: Text("UangKu"),
         elevation: 0,
-        backgroundColor: Colors.transparent,
-        title: Text(
-          "Expense Tracker",
-          style: TextStyle(color: Colors.black),
-        ),
-        centerTitle: true,
       ),
 
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.deepPurple,
-        child: Icon(Icons.add),
+        child: Icon(Icons.add, color: Colors.white),
         onPressed: () {
           showModalBottomSheet(
             context: context,
             isScrollControlled: true,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(20),
-              ),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
             ),
             builder: (_) => AddTransactionModal(onAdd: () {
               setState(() {});
@@ -80,20 +50,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
       body: Column(
         children: [
-          // HEADER (TOTAL CARD)
+          // HEADER CARD
           Container(
             margin: EdgeInsets.all(16),
             padding: EdgeInsets.all(20),
-            width: double.infinity,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(20),
               gradient: LinearGradient(
-                colors: [
-                  Colors.deepPurple,
-                  Colors.purpleAccent,
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+                colors: [Colors.deepPurple, Colors.purpleAccent],
               ),
               boxShadow: [
                 BoxShadow(
@@ -106,44 +70,36 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Text("Total Pengeluaran",
+                    style: TextStyle(color: Colors.white70)),
+                SizedBox(height: 10),
                 Text(
-                  "Total Pengeluaran",
-                  style: TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
-                  ),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  rupiahFormat.format(getTotal()),
+                  "Rp ${getTotal().toStringAsFixed(0)}",
                   style: TextStyle(
                     fontSize: 28,
-                    color: Colors.white,
                     fontWeight: FontWeight.bold,
+                    color: Colors.white,
                   ),
                 ),
               ],
             ),
           ),
 
-          // LIST TITLE
+          // TITLE
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(horizontal: 16),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 "Transaksi Terbaru",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
           ),
 
           SizedBox(height: 10),
 
-          // LIST / EMPTY STATE
+          // LIST
           Expanded(
             child: transactions.isEmpty
                 ? Center(
@@ -157,76 +113,36 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (context, index) {
                       final item = transactions[index];
 
-                      return Dismissible(
-                        key: Key(item.hashCode.toString()),
-                        onDismissed: (_) => deleteItem(index),
-                        background: Container(
-                          margin: EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          alignment: Alignment.centerRight,
-                          padding: EdgeInsets.only(right: 20),
-                          child: Icon(Icons.delete, color: Colors.white),
-                        ),
-                        child: Container(
-                          margin: EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 6),
-                          padding: EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 5,
-                              )
-                            ],
-                          ),
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 24,
-                                backgroundColor:
-                                    Colors.deepPurple.withOpacity(0.1),
-                                child: Icon(
-                                  getCategoryIcon(item.category),
-                                  color: Colors.deepPurple,
-                                ),
-                              ),
-                              SizedBox(width: 12),
+                      return Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 6),
 
-                              // TEXT
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      rupiahFormat.format(item.amount),
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                    SizedBox(height: 4),
-                                    Text(
-                                      item.category,
-                                      style:
-                                          TextStyle(color: Colors.grey),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                        child: Dismissible(
+                          key: Key(item.hashCode.toString()),
+                          direction: DismissDirection.endToStart,
+                          onDismissed: (_) => deleteItem(index),
 
-                              // DATE
-                              Text(
-                                "Hari ini",
-                                style: TextStyle(color: Colors.grey),
+                          background: Container(
+                            alignment: Alignment.centerRight,
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: Icon(Icons.delete, color: Colors.white),
+                          ),
+
+                          child: Card(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            child: ListTile(
+                              title: Text(
+                                "Rp ${item.amount.toStringAsFixed(0)}",
+                                style: TextStyle(fontWeight: FontWeight.bold),
                               ),
-                            ],
+                              subtitle: Text(item.category),
+                            ),
                           ),
                         ),
                       );
