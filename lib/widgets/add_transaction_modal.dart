@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 import '../models/transaction.dart';
 
 class AddTransactionModal extends StatefulWidget {
@@ -12,14 +13,32 @@ class AddTransactionModal extends StatefulWidget {
       _AddTransactionModalState();
 }
 
-class _AddTransactionModalState extends State<AddTransactionModal> {
+class _AddTransactionModalState
+    extends State<AddTransactionModal> {
   final amountController = TextEditingController();
   String category = "Makan";
 
+  final formatter = NumberFormat("#,###", "id_ID");
+
   final box = Hive.box<TransactionModel>('transactions');
 
+  void formatInput(String value) {
+    value = value.replaceAll(RegExp(r'[^0-9]'), '');
+    if (value.isEmpty) return;
+
+    final number = int.parse(value);
+    amountController.value = TextEditingValue(
+      text: formatter.format(number),
+      selection: TextSelection.collapsed(
+          offset: formatter.format(number).length),
+    );
+  }
+
   void save() {
-    final amount = double.tryParse(amountController.text);
+    final clean =
+        amountController.text.replaceAll(RegExp(r'[^0-9]'), '');
+
+    final amount = double.tryParse(clean);
 
     if (amount == null) return;
 
@@ -38,21 +57,20 @@ class _AddTransactionModalState extends State<AddTransactionModal> {
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom + 20, 
+          bottom: MediaQuery.of(context).viewInsets.bottom + 20,
           left: 16,
           right: 16,
           top: 16,
         ),
-        child: SingleChildScrollView( 
+        child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 "Tambah Transaksi",
                 style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
               ),
 
               SizedBox(height: 15),
@@ -60,6 +78,7 @@ class _AddTransactionModalState extends State<AddTransactionModal> {
               TextField(
                 controller: amountController,
                 keyboardType: TextInputType.number,
+                onChanged: formatInput,
                 decoration: InputDecoration(
                   labelText: "Nominal",
                   border: OutlineInputBorder(
@@ -103,10 +122,14 @@ class _AddTransactionModalState extends State<AddTransactionModal> {
                 child: ElevatedButton(
                   onPressed: save,
                   style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 14),
+                    padding:
+                        EdgeInsets.symmetric(vertical: 14),
                     backgroundColor: Colors.deepPurple,
                   ),
-                  child: Text("Simpan"),
+                  child: Text(
+                    "Simpan",
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
             ],

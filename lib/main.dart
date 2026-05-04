@@ -22,6 +22,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: "UangKu",
       theme: ThemeData(
+        useMaterial3: false,
         primarySwatch: Colors.deepPurple,
       ),
       home: HomeScreen(),
