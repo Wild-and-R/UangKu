@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 part 'transaction.g.dart';
 
 @HiveType(typeId: 0)
-class TransactionModel {
+class TransactionModel extends HiveObject {
   @HiveField(0)
   double amount;
 
@@ -13,9 +13,13 @@ class TransactionModel {
   @HiveField(2)
   DateTime date;
 
+  @HiveField(3)
+  String description;
+
   TransactionModel({
     required this.amount,
     required this.category,
     required this.date,
+    required this.description,
   });
 }
